@@ -1,0 +1,218 @@
+-- Azure Hub 1.1
+-- by: thecamp271
+
+local player = game.Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+local hum = char:WaitForChild("Humanoid")
+
+player.CharacterAdded:Connect(function(c)
+    char = c
+    hum = c:WaitForChild("Humanoid")
+end)
+
+-- GUI
+local gui = Instance.new("ScreenGui", player.PlayerGui)
+gui.Name = "AzureHub"
+gui.ResetOnSpawn = false
+
+local main = Instance.new("Frame", gui)
+main.Size = UDim2.new(0, 380, 0, 350)
+main.Position = UDim2.new(0.3, 0, 0.25, 0)
+main.BackgroundColor3 = Color3.fromRGB(20,20,30)
+main.Active = true
+main.Draggable = true
+Instance.new("UICorner", main).CornerRadius = UDim.new(0,12)
+
+-- Título
+local title = Instance.new("TextLabel", main)
+title.Size = UDim2.new(1, -80, 0, 30)
+title.Position = UDim2.new(0, 10, 0, 5)
+title.BackgroundTransparency = 1
+title.Text = "Azure Hub 1.1"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+title.TextColor3 = Color3.fromRGB(0,170,255)
+title.TextXAlignment = Enum.TextXAlignment.Left
+
+-- By
+local by = Instance.new("TextLabel", main)
+by.Size = UDim2.new(1, -20, 0, 18)
+by.Position = UDim2.new(0, 10, 0, 35)
+by.BackgroundTransparency = 1
+by.Text = "by: thecamp271"
+by.Font = Enum.Font.Gotham
+by.TextSize = 13
+by.TextColor3 = Color3.fromRGB(180,180,180)
+by.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Botões topo
+local function topButton(txt, x)
+    local b = Instance.new("TextButton", main)
+    b.Size = UDim2.new(0,30,0,30)
+    b.Position = UDim2.new(1,-x,0,8)
+    b.Text = txt
+    b.Font = Enum.Font.GothamBold
+    b.BackgroundColor3 = Color3.fromRGB(40,40,55)
+    b.TextColor3 = Color3.new(1,1,1)
+    Instance.new("UICorner", b)
+    return b
+end
+
+local minimize = topButton("–", 70)
+local close = topButton("X", 35)
+close.BackgroundColor3 = Color3.fromRGB(150,50,50)
+
+-- ScrollingFrame
+local scroll = Instance.new("ScrollingFrame", main)
+scroll.Position = UDim2.new(0,10,0,60)
+scroll.Size = UDim2.new(1,-20,1,-70)
+scroll.CanvasSize = UDim2.new(0,0,0,0)
+scroll.ScrollBarImageTransparency = 0.4
+scroll.BackgroundTransparency = 1
+
+local layout = Instance.new("UIListLayout", scroll)
+layout.Padding = UDim.new(0,10)
+
+-- Criar botão funcional
+local function createButton(text)
+    local btn = Instance.new("TextButton", scroll)
+    btn.Size = UDim2.new(1,0,0,40)
+    btn.Text = text
+    btn.BackgroundColor3 = Color3.fromRGB(0,120,200)
+    btn.TextColor3 = Color3.new(1,1,1)
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 15
+    Instance.new("UICorner", btn)
+    return btn
+end
+
+-- ================= FUNÇÕES =================
+
+-- Speed
+local speedOn = false
+local speedBtn = createButton("Speed [OFF]")
+speedBtn.MouseButton1Click:Connect(function()
+    speedOn = not speedOn
+    hum.WalkSpeed = speedOn and 50 or 16
+    speedBtn.Text = speedOn and "Speed [ON]" or "Speed [OFF]"
+end)
+
+-- Jump
+local jumpOn = false
+local jumpBtn = createButton("Jump [OFF]")
+jumpBtn.MouseButton1Click:Connect(function()
+    jumpOn = not jumpOn
+    hum.JumpPower = jumpOn and 100 or 50
+    jumpBtn.Text = jumpOn and "Jump [ON]" or "Jump [OFF]"
+end)
+
+-- ESP
+local espOn = false
+local espBtn = createButton("ESP [OFF]")
+
+espBtn.MouseButton1Click:Connect(function()
+    espOn = not espOn
+    espBtn.Text = espOn and "ESP [ON]" or "ESP [OFF]"
+
+    for _,plr in pairs(game.Players:GetPlayers()) do
+        if plr ~= player and plr.Character then
+            if espOn then
+                if not plr.Character:FindFirstChild("AzureESP") then
+                    local h = Instance.new("Highlight", plr.Character)
+                    h.Name = "AzureESP"
+                    h.FillColor = Color3.fromRGB(0,170,255)
+                    h.OutlineColor = Color3.new(1,1,1)
+                end
+            else
+                local h = plr.Character:FindFirstChild("AzureESP")
+                if h then h:Destroy() end
+            end
+        end
+    end
+end)
+
+-- Reset
+local resetBtn = createButton("Reset Character")
+resetBtn.MouseButton1Click:Connect(function()
+    hum.Health = 0
+end)
+
+-- God Mode
+local godModeOn = false
+local godModeBtn = createButton("God Mode [OFF]")
+godModeBtn.MouseButton1Click:Connect(function()
+    godModeOn = not godModeOn
+    godModeBtn.Text = godModeOn and "God Mode [ON]" or "God Mode [OFF]"
+
+    if godModeOn then
+        hum.Health = math.huge -- Torna o personagem imortal
+    else
+        hum.Health = 100 -- Ou a saúde padrão
+    end
+end)
+
+-- Gravity Control
+local gravityOn = false
+local gravityBtn = createButton("Gravity [Normal]")
+gravityBtn.MouseButton1Click:Connect(function()
+    gravityOn = not gravityOn
+    gravityBtn.Text = gravityOn and "Gravity [Low]" or "Gravity [Normal]"
+
+    if gravityOn then
+        game.Workspace.Gravity = 50 -- Diminui a gravidade
+    else
+        game.Workspace.Gravity = 196.2 -- Gravidade padrão
+    end
+end)
+
+-- NoClip
+local noClipOn = false
+local noClipBtn = createButton("NoClip [OFF]")
+noClipBtn.MouseButton1Click:Connect(function()
+    noClipOn = not noClipOn
+    noClipBtn.Text = noClipOn and "NoClip [ON]" or "NoClip [OFF]"
+
+    local function toggleNoClip()
+        for _, part in pairs(char:GetChildren()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = not noClipOn
+            end
+        end
+    end
+
+    toggleNoClip()
+end)
+
+-- Invisible Mode
+local invisibleOn = false
+local invisibleBtn = createButton("Invisible [OFF]")
+invisibleBtn.MouseButton1Click:Connect(function()
+    invisibleOn = not invisibleOn
+    invisibleBtn.Text = invisibleOn and "Invisible [ON]" or "Invisible [OFF]"
+
+    char:WaitForChild("Head").Transparency = invisibleOn and 1 or 0
+    for _, part in pairs(char:GetChildren()) do
+        if part:IsA("BasePart") then
+            part.Transparency = invisibleOn and 1 or 0
+        end
+    end
+end)
+
+-- Ajustar scroll
+layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    scroll.CanvasSize = UDim2.new(0,0,0,layout.AbsoluteContentSize.Y + 10)
+end)
+
+-- Minimizar
+local minimized = false
+minimize.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    scroll.Visible = not minimized
+    by.Visible = not minimized
+    main.Size = minimized and UDim2.new(0,380,0,45) or UDim2.new(0,380,0,350)
+end)
+
+-- Fechar
+close.MouseButton1Click:Connect(function()
+    gui:Destroy()
+end)

@@ -1,0 +1,269 @@
+-- Azure Hub 1.1
+-- by: thecamp271
+-- Key protegida (não visível)
+
+-- ================= SETUP =================
+local player = game.Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+local hum = char:WaitForChild("Humanoid")
+
+player.CharacterAdded:Connect(function(c)
+    char = c
+    hum = c:WaitForChild("Humanoid")
+end)
+
+-- ================= GUI =================
+local gui = Instance.new("ScreenGui", player.PlayerGui)
+gui.Name = "AzureHub"
+gui.ResetOnSpawn = false
+
+local main = Instance.new("Frame", gui)
+main.Size = UDim2.new(0, 380, 0, 350)
+main.Position = UDim2.new(0.3, 0, 0.25, 0)
+main.BackgroundColor3 = Color3.fromRGB(20,20,30)
+main.Active = true
+main.Draggable = true
+main.Visible = false
+Instance.new("UICorner", main).CornerRadius = UDim.new(0,12)
+
+-- Title
+local title = Instance.new("TextLabel", main)
+title.Size = UDim2.new(1,-80,0,30)
+title.Position = UDim2.new(0,10,0,5)
+title.BackgroundTransparency = 1
+title.Text = "Azure Hub 1.1"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+title.TextColor3 = Color3.fromRGB(0,170,255)
+title.TextXAlignment = Enum.TextXAlignment.Left
+
+-- By
+local by = Instance.new("TextLabel", main)
+by.Size = UDim2.new(1,-20,0,18)
+by.Position = UDim2.new(0,10,0,35)
+by.BackgroundTransparency = 1
+by.Text = "by: thecamp271"
+by.Font = Enum.Font.Gotham
+by.TextSize = 13
+by.TextColor3 = Color3.fromRGB(180,180,180)
+by.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Top buttons
+local function topButton(txt, x)
+    local b = Instance.new("TextButton", main)
+    b.Size = UDim2.new(0,30,0,30)
+    b.Position = UDim2.new(1,-x,0,8)
+    b.Text = txt
+    b.Font = Enum.Font.GothamBold
+    b.BackgroundColor3 = Color3.fromRGB(40,40,55)
+    b.TextColor3 = Color3.new(1,1,1)
+    Instance.new("UICorner", b)
+    return b
+end
+
+local minimize = topButton("–", 70)
+local close = topButton("X", 35)
+close.BackgroundColor3 = Color3.fromRGB(150,50,50)
+
+-- Scroll
+local scroll = Instance.new("ScrollingFrame", main)
+scroll.Position = UDim2.new(0,10,0,60)
+scroll.Size = UDim2.new(1,-20,1,-70)
+scroll.CanvasSize = UDim2.new(0,0,0,0)
+scroll.ScrollBarImageTransparency = 0.4
+scroll.BackgroundTransparency = 1
+
+local layout = Instance.new("UIListLayout", scroll)
+layout.Padding = UDim.new(0,10)
+
+local function createButton(text)
+    local btn = Instance.new("TextButton", scroll)
+    btn.Size = UDim2.new(1,0,0,40)
+    btn.Text = text
+    btn.BackgroundColor3 = Color3.fromRGB(0,120,200)
+    btn.TextColor3 = Color3.new(1,1,1)
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 15
+    Instance.new("UICorner", btn)
+    return btn
+end
+
+-- ================= FEATURES =================
+
+local speedOn = false
+createButton("Speed [OFF]").MouseButton1Click:Connect(function(btn)
+    speedOn = not speedOn
+    hum.WalkSpeed = speedOn and 50 or 16
+    btn.Text = speedOn and "Speed [ON]" or "Speed [OFF]"
+end)
+
+local jumpOn = false
+createButton("Jump [OFF]").MouseButton1Click:Connect(function(btn)
+    jumpOn = not jumpOn
+    hum.JumpPower = jumpOn and 100 or 50
+    btn.Text = jumpOn and "Jump [ON]" or "Jump [OFF]"
+end)
+
+local espOn = false
+createButton("ESP [OFF]").MouseButton1Click:Connect(function(btn)
+    espOn = not espOn
+    btn.Text = espOn and "ESP [ON]" or "ESP [OFF]"
+
+    for _,plr in pairs(game.Players:GetPlayers()) do
+        if plr ~= player and plr.Character then
+            local h = plr.Character:FindFirstChild("AzureESP")
+            if espOn and not h then
+                h = Instance.new("Highlight", plr.Character)
+                h.Name = "AzureESP"
+                h.FillColor = Color3.fromRGB(0,170,255)
+                h.OutlineColor = Color3.new(1,1,1)
+            elseif not espOn and h then
+                h:Destroy()
+            end
+        end
+    end
+end)
+
+createButton("Reset Character").MouseButton1Click:Connect(function()
+    hum.Health = 0
+end)
+
+local god = false
+createButton("God Mode [OFF]").MouseButton1Click:Connect(function(btn)
+    god = not god
+    hum.Health = god and math.huge or 100
+    btn.Text = god and "God Mode [ON]" or "God Mode [OFF]"
+end)
+
+local gravity = false
+createButton("Gravity [Normal]").MouseButton1Click:Connect(function(btn)
+    gravity = not gravity
+    workspace.Gravity = gravity and 50 or 196.2
+    btn.Text = gravity and "Gravity [Low]" or "Gravity [Normal]"
+end)
+
+local noclip = false
+createButton("NoClip [OFF]").MouseButton1Click:Connect(function(btn)
+    noclip = not noclip
+    for _,p in pairs(char:GetChildren()) do
+        if p:IsA("BasePart") then
+            p.CanCollide = not noclip
+        end
+    end
+    btn.Text = noclip and "NoClip [ON]" or "NoClip [OFF]"
+end)
+
+local invis = false
+createButton("Invisible [OFF]").MouseButton1Click:Connect(function(btn)
+    invis = not invis
+    for _,p in pairs(char:GetChildren()) do
+        if p:IsA("BasePart") then
+            p.Transparency = invis and 1 or 0
+        end
+    end
+    btn.Text = invis and "Invisible [ON]" or "Invisible [OFF]"
+end)
+
+layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    scroll.CanvasSize = UDim2.new(0,0,0,layout.AbsoluteContentSize.Y + 10)
+end)
+
+-- ================= MINIMIZE (CORRETO) =================
+local minimized = false
+local originalSize = main.Size
+
+minimize.MouseButton1Click:Connect(function()
+    minimized = not minimized
+
+    if minimized then
+        main.Size = UDim2.new(0, 380, 0, 45)
+        scroll.Visible = false
+        by.Visible = false
+        minimize.Text = "+"
+    else
+        main.Size = originalSize
+        scroll.Visible = true
+        by.Visible = true
+        minimize.Text = "–"
+    end
+end)
+
+close.MouseButton1Click:Connect(function()
+    gui:Destroy()
+end)
+
+-- ================= KEY SYSTEM =================
+
+local secretKey = {65,90,85,82,69,49,50,51}
+
+local function checkKey(input)
+    if #input ~= #secretKey then return false end
+    for i = 1, #secretKey do
+        if string.byte(input, i) ~= secretKey[i] then
+            return false
+        end
+    end
+    return true
+end
+
+local keyGui = Instance.new("Frame", gui)
+keyGui.Size = UDim2.new(0,300,0,220)
+keyGui.Position = UDim2.new(0.5,-150,0.5,-110)
+keyGui.BackgroundColor3 = Color3.fromRGB(20,20,30)
+keyGui.Active = true
+keyGui.Draggable = true
+Instance.new("UICorner", keyGui)
+
+local t = Instance.new("TextLabel", keyGui)
+t.Size = UDim2.new(1,0,0,35)
+t.BackgroundTransparency = 1
+t.Text = "Azure Hub - Key"
+t.Font = Enum.Font.GothamBold
+t.TextSize = 18
+t.TextColor3 = Color3.fromRGB(0,170,255)
+
+local box = Instance.new("TextBox", keyGui)
+box.Size = UDim2.new(1,-40,0,40)
+box.Position = UDim2.new(0,20,0,60)
+box.PlaceholderText = "Enter key"
+box.BackgroundColor3 = Color3.fromRGB(40,40,55)
+box.TextColor3 = Color3.new(1,1,1)
+box.Font = Enum.Font.Gotham
+Instance.new("UICorner", box)
+
+local unlock = Instance.new("TextButton", keyGui)
+unlock.Size = UDim2.new(1,-40,0,35)
+unlock.Position = UDim2.new(0,20,0,115)
+unlock.Text = "Unlock"
+unlock.BackgroundColor3 = Color3.fromRGB(0,120,200)
+unlock.TextColor3 = Color3.new(1,1,1)
+unlock.Font = Enum.Font.GothamBold
+Instance.new("UICorner", unlock)
+
+local getKey = Instance.new("TextButton", keyGui)
+getKey.Size = UDim2.new(1,-40,0,35)
+getKey.Position = UDim2.new(0,20,0,155)
+getKey.Text = "Get Key"
+getKey.BackgroundColor3 = Color3.fromRGB(60,160,255)
+getKey.TextColor3 = Color3.new(1,1,1)
+getKey.Font = Enum.Font.GothamBold
+Instance.new("UICorner", getKey)
+
+local keyLink = "https://link-center.net/1462353/T8O1Z4BKUSft"
+
+getKey.MouseButton1Click:Connect(function()
+    pcall(function()
+        setclipboard(keyLink)
+    end)
+    box.PlaceholderText = "Link copiado!"
+end)
+
+unlock.MouseButton1Click:Connect(function()
+    if checkKey(box.Text) then
+        keyGui:Destroy()
+        main.Visible = true
+    else
+        box.Text = ""
+        box.PlaceholderText = "Key incorreta"
+    end
+end)

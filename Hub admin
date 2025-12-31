@@ -1,0 +1,228 @@
+-- 💀 ADMIN HUB | EXECUTOR STYLE
+
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+local hum = char:WaitForChild("Humanoid")
+local root = char:WaitForChild("HumanoidRootPart")
+
+player.CharacterAdded:Connect(function(c)
+	char = c
+	hum = c:WaitForChild("Humanoid")
+	root = c:WaitForChild("HumanoidRootPart")
+end)
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "AdminHub"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+-- MAIN
+local main = Instance.new("Frame", gui)
+main.Size = UDim2.fromScale(0.45, 0.6)
+main.Position = UDim2.fromScale(0.275, 0.2)
+main.BackgroundColor3 = Color3.fromRGB(12,12,12)
+main.BorderSizePixel = 0
+main.Active = true
+main.Draggable = true
+
+-- TOP BAR
+local top = Instance.new("Frame", main)
+top.Size = UDim2.fromScale(1, 0.12)
+top.BackgroundColor3 = Color3.fromRGB(18,18,18)
+top.BorderSizePixel = 0
+
+-- TITLE
+local title = Instance.new("TextLabel", top)
+title.Size = UDim2.fromScale(0.7, 1)
+title.Position = UDim2.fromScale(0.02, 0)
+title.Text = "ADMIN HUB"
+title.Font = Enum.Font.Code
+title.TextScaled = true
+title.TextColor3 = Color3.fromRGB(0,255,120)
+title.BackgroundTransparency = 1
+title.TextXAlignment = Enum.TextXAlignment.Left
+
+-- BY
+local by = Instance.new("TextLabel", top)
+by.Size = UDim2.fromScale(0.7, 0.4)
+by.Position = UDim2.fromScale(0.02, 0.55)
+by.Text = "by: thecamp271"
+by.Font = Enum.Font.Code
+by.TextScaled = true
+by.TextColor3 = Color3.fromRGB(150,150,150)
+by.BackgroundTransparency = 1
+by.TextXAlignment = Enum.TextXAlignment.Left
+
+-- BOTÕES TOPO
+local minimize = Instance.new("TextButton", top)
+minimize.Size = UDim2.fromScale(0.12, 0.8)
+minimize.Position = UDim2.fromScale(0.75, 0.1)
+minimize.Text = "-"
+minimize.Font = Enum.Font.Code
+minimize.TextScaled = true
+minimize.BackgroundColor3 = Color3.fromRGB(30,30,30)
+minimize.TextColor3 = Color3.new(1,1,1)
+
+local close = Instance.new("TextButton", top)
+close.Size = UDim2.fromScale(0.12, 0.8)
+close.Position = UDim2.fromScale(0.88, 0.1)
+close.Text = "X"
+close.Font = Enum.Font.Code
+close.TextScaled = true
+close.BackgroundColor3 = Color3.fromRGB(120,30,30)
+close.TextColor3 = Color3.new(1,1,1)
+
+-- CONTAINER
+local container = Instance.new("ScrollingFrame", main)
+container.Position = UDim2.fromScale(0, 0.12)
+container.Size = UDim2.fromScale(1, 0.88)
+container.CanvasSize = UDim2.new(0,0,0,600)
+container.ScrollBarImageTransparency = 1
+container.BackgroundTransparency = 1
+
+local layout = Instance.new("UIListLayout", container)
+layout.Padding = UDim.new(0,8)
+
+local function button(txt)
+	local b = Instance.new("TextButton", container)
+	b.Size = UDim2.new(1, -20, 0, 45)
+	b.Position = UDim2.fromOffset(10,0)
+	b.Text = txt
+	b.Font = Enum.Font.Code
+	b.TextScaled = true
+	b.BackgroundColor3 = Color3.fromRGB(20,20,20)
+	b.TextColor3 = Color3.fromRGB(200,200,200)
+	b.BorderSizePixel = 0
+	return b
+end
+
+-- 🔥 BOTÕES
+local flyB   = button("Fly")
+local speedB = button("Speed")
+local jumpB  = button("Jump")
+local godB   = button("God")
+local tpB    = button("Teleport")
+local coinB  = button("Give Coins")
+local skipB  = button("Skip Fases")
+local spawnB = button("Spawn Itens")
+local hitB   = button("Ver Hitbox")
+local lagB   = button("Testar Lag")
+
+-- ✈️ FLY REAL
+local flying = false
+local bv, bg
+
+flyB.MouseButton1Click:Connect(function()
+	flying = not flying
+	if flying then
+		bv = Instance.new("BodyVelocity", root)
+		bv.Velocity = Vector3.zero
+		bv.MaxForce = Vector3.new(1e9,1e9,1e9)
+
+		bg = Instance.new("BodyGyro", root)
+		bg.MaxTorque = Vector3.new(1e9,1e9,1e9)
+
+		RunService.RenderStepped:Connect(function()
+			if flying then
+				bv.Velocity = workspace.CurrentCamera.CFrame.LookVector * 60
+				bg.CFrame = workspace.CurrentCamera.CFrame
+			end
+		end)
+	else
+		if bv then bv:Destroy() end
+		if bg then bg:Destroy() end
+	end
+end)
+
+-- ⚡ SPEED
+speedB.MouseButton1Click:Connect(function()
+	hum.WalkSpeed = 60
+end)
+
+-- 🦘 JUMP
+jumpB.MouseButton1Click:Connect(function()
+	hum.JumpPower = 150
+end)
+
+-- 🛡️ GOD
+godB.MouseButton1Click:Connect(function()
+	hum.MaxHealth = math.huge
+	hum.Health = hum.MaxHealth
+end)
+
+-- 🌍 TELEPORT
+tpB.MouseButton1Click:Connect(function()
+	root.CFrame += Vector3.new(math.random(-300,300),50,math.random(-300,300))
+end)
+
+-- 💰 GIVE COINS
+coinB.MouseButton1Click:Connect(function()
+	local stats = player:FindFirstChild("leaderstats")
+	if stats and stats:FindFirstChild("Coins") then
+		stats.Coins.Value += 100
+	end
+end)
+
+-- ⏭️ SKIP FASE
+skipB.MouseButton1Click:Connect(function()
+	local stage = player:FindFirstChild("Stage")
+	if stage then
+		stage.Value += 1
+	end
+end)
+
+-- 📦 SPAWN ITENS
+spawnB.MouseButton1Click:Connect(function()
+	local p = Instance.new("Part", workspace)
+	p.Size = Vector3.new(3,3,3)
+	p.Position = root.Position + Vector3.new(0,6,0)
+	p.BrickColor = BrickColor.new("Bright green")
+end)
+
+-- 🔴 VER HITBOX
+local hit = false
+hitB.MouseButton1Click:Connect(function()
+	hit = not hit
+	for _,v in pairs(char:GetChildren()) do
+		if v:IsA("BasePart") then
+			v.Transparency = hit and 0.5 or 0
+			v.Color = hit and Color3.fromRGB(255,0,0) or v.Color
+		end
+	end
+end)
+
+-- 🐌 TESTAR LAG
+lagB.MouseButton1Click:Connect(function()
+	for i=1,300 do
+		local p = Instance.new("Part", workspace)
+		p.Size = Vector3.new(4,4,4)
+		p.Position = root.Position + Vector3.new(math.random(-80,80),80,math.random(-80,80))
+	end
+end)
+
+-- ➖ MINIMIZAR
+local minimized = false
+minimize.MouseButton1Click:Connect(function()
+	minimized = not minimized
+	container.Visible = not minimized
+	main.Size = minimized and UDim2.fromScale(0.45,0.12) or UDim2.fromScale(0.45,0.6)
+end)
+
+-- ❌ FECHAR
+close.MouseButton1Click:Connect(function()
+	gui:Destroy()
+end)
+
+-- ⌨️ TOGGLE (RightShift)
+UIS.InputBegan:Connect(function(i)
+	if i.KeyCode == Enum.KeyCode.RightShift then
+		main.Visible = not main.Visible
+	end
+end)
+
+warn("ADMIN HUB CARREGADO COM SUCESSO")
